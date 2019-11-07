@@ -55,6 +55,16 @@ def showFunc(func):
     for line in inspect.getdoc(func).splitlines():
         print(f"\t{line}")
 
+def i_help():
+    print("* Use i_help() to print this message().")
+    print("* You have cls() - Windows and clear() - Linux to clear the console.")
+    print("*")
+    print("* You can use showClasses() to show currently available classes.")
+    print("* You can use showFuncs() to show non class-related functions.")
+    print("* You can use showFuncs(class) to show the functions within a class.")
+    print("* You can use showFuncs(obj) to show bound methods of a class instance.")
+    print("* You can use showFunc(func) to show a function signature and documentation.")
+    
 print("Imported the Interactive Scripting Helper.")
 print("This is meant to be used ONLY on an interactive Python session.")
 print("This should be imported as:")
@@ -62,15 +72,8 @@ print("\tfrom i import *")
 print("Or run as:")
 print("\tpython -i i.py")
 print()
-print("You have cls() - Windows and clear() - Linux to clear the console.")
+i_help()
 print()
-print("You can use showClasses() to show currently available classes.")
-print("You can use showFuncs() to show non class-related functions.")
-print("You can use showFuncs(class) to show the functions within a class.")
-print("You can use showFuncs(obj) to show bound methods of a class instance.")
-print("You can use showFunc(func) to show a function signature and documentation.")
-print()
-
 print("Getting game window and initializing.")
 try:
     Helper.init(True)
