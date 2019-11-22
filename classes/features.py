@@ -7,7 +7,7 @@ import time
 
 from collections import deque, namedtuple
 from typing      import Dict, List, Tuple
-from PIL.Image   import Image as PILImage
+from PIL.Image   import Image as PIL_Image
 
 from deprecated import deprecated
 
@@ -1541,7 +1541,7 @@ class Misc:
     
     # crops the misc breakdown image, cutting off empty space on the right
     @staticmethod
-    def __cutoff_right(bmp) -> PILImage:
+    def __cutoff_right(bmp) -> PIL_Image:
         first_pix = bmp.getpixel((0, 0))
         width, height = bmp.size
         
@@ -1563,7 +1563,7 @@ class Misc:
     
     # splits the three parts of the resource breakdown (pow, bars, cap)
     @staticmethod
-    def __split_breakdown(bmp) -> List[PILImage]:
+    def __split_breakdown(bmp) -> List[PIL_Image]:
         first_pix = bmp.getpixel((0, 0))
         width, height = bmp.size
         y1 = 1
