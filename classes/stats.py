@@ -10,7 +10,6 @@ import usersettings as userset
 
 from classes.helper     import Helper
 from classes.navigation import Navigation
-from classes.inputs     import Inputs
 from classes.processing import Processing
 from classes.features   import Misc
 
