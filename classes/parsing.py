@@ -1,21 +1,20 @@
 import datetime
 import os
 import re
-import time
 
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple, Union
 
-from PIL.Image import Image as PIL_Image
+from PIL       import Image as image # image module
+from PIL.Image import Image as PIL_Image # image.image class
 from PIL import ImageFilter
 import cv2
 import numpy
 
 import pytesseract
 
-import usersettings as userset
 from classes.window import Window
 from classes.inputs import Inputs
-from classes.color  import Color, hex_color, RGB_color
+from classes.color  import Color, RGB_color
 
 Coordinates = Tuple[int, int]
 
@@ -182,23 +181,9 @@ class Parsing:
         return s
 
     @staticmethod
-    def get_pixel_color(x :int, y :int, debug :bool =False) -> str:
-        """Get the color of selected pixel in HEX."""
-        dc = win32gui.GetWindowDC(Window.id)
-        rgba = win32gui.GetPixel(dc, x + 8 + Window.x, y + 8 + Window.y)
-        win32gui.ReleaseDC(Window.id, dc)
-        r = rgba & 0xff
-        g = rgba >> 8 & 0xff
-        b = rgba >> 16 & 0xff
-        
-        if debug: print(Color.rgb_to_hex((r, g, b)))
-        
-        return Color.rgb_to_hex((r, g, b))
-
-    @staticmethod
-    def check_pixel_color(x :int, y :int, checks :Iterable[str]) -> bool:
+    def check_pixel_color(x :int, y :int, checks :Union[str, Iterable[str]]) -> bool:
         """Check if coordinate matches with one or more colors."""
-        color = Parsing.get_pixel_color(x, y)
+        color = Inputs.get_pixel_color(x, y).get_hex()
         if isinstance(checks, list):
             for check in checks:
                 if check == color:
