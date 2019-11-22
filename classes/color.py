@@ -3,9 +3,17 @@ from __future__ import annotations
 from typing import Tuple
 
 class Color:
-    def __init__(self, rgb, hex):
+    # Do not use Color(rgb, hex) to initialize a Color object
+    # Use RGB(r) or hex(h) instead
+    def __init__(self :Color, rgb :Tuple[int, int, int], hex :str) -> None:
         self.rgb = rgb
         self.hex = hex
+        
+    def __eq__(a :Color, b :Color) -> bool:
+        return a.hex = b.hex
+    
+    def __str__(self :Color) -> str:
+        return self.hex
     
     @staticmethod
     def RGB(r :Tuple[int, int, int]) -> Color:
