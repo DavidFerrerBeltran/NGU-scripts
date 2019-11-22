@@ -12,6 +12,7 @@ from PIL.Image import Image as PIL_Image
 
 import usersettings as userset
 from classes.window import Window
+from classes.color  import Color
 
 class Inputs:
     """This class handles inputs."""
@@ -141,3 +142,18 @@ class Inputs:
         win32gui.ReleaseDC(Window.id, hwnd_dc)
         # bmp.save("asdf.png")
         return bmp
+
+    @staticmethod
+    def get_pixel_color(x :int, y :int, debug :bool =False) -> Color:
+        """Get the color of selected pixel in HEX."""
+        dc = win32gui.GetWindowDC(Window.id)
+        rgba = win32gui.GetPixel(dc, x + 8 + Window.x, y + 8 + Window.y)
+        win32gui.ReleaseDC(Window.id, dc)
+        r = rgba & 0xff
+        g = rgba >> 8 & 0xff
+        b = rgba >> 16 & 0xff
+        
+        if debug: print(Color.RGB((r, g, b)))
+        
+        return Color.RGB((r, g, b))
+    
