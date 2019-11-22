@@ -2,11 +2,13 @@
 from classes.window     import Window
 from classes.inputs     import Inputs
 from classes.features   import Inventory, MoneyPit, Adventure, Yggdrasil, GoldDiggers, Questing
+from classes.processing import Processing
 
 import coordinates as coords
 
 
 class Helper:
+    @staticmethod
     def init(printCoords :bool =False) -> None:
         """Initialize Window class variables.
         Helper.init() should go at the very top of any script, straight after imports.
@@ -17,7 +19,7 @@ class Helper:
             w = rect[2] - rect[0]
             h = rect[3] - rect[1]
             Window.id = window_id
-            cds = Inputs.pixel_search(coords.TOP_LEFT_COLOR, 0, 0, w, h)
+            cds = Processing.pixel_search(coords.TOP_LEFT_COLOR, 0, 0, w, h)
             if cds:
                 Window.setPos(*cds)
                 break
@@ -27,7 +29,8 @@ class Helper:
         Inputs.click(*coords.WASTE_CLICK)
         
         if printCoords: print(f"Top left found at: {Window.x}, {Window.y}")
-
+    
+    @staticmethod
     def requirements() -> None:
         """Set everything to the proper requirements to run the script.
         It's strongly recommended to run this straight after init()."""
@@ -39,6 +42,7 @@ class Helper:
         Inputs.click(*coords.SETTINGS_PAGE_2)
         Inputs.click(*coords.SIMPLE_INVENTORY_SHORTCUT_ON)
 
+    @staticmethod
     def loop(idle_majors :bool =False) -> None:
         """Run infinite loop to prevent idling after task is complete.
         
@@ -58,6 +62,7 @@ class Helper:
             Yggdrasil.ygg()
             Adventure.itopod_snipe(300)
 
+    @staticmethod
     def human_format(num :float) -> str:
         """Convert large numbers into something readable."""
         suffixes = ['', 'K', 'M', 'B', 'T', 'Q', 'Qi', 'Sx', 'Sp']

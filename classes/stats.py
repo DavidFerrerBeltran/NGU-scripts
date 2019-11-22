@@ -11,6 +11,7 @@ import usersettings as userset
 from classes.helper     import Helper
 from classes.navigation import Navigation
 from classes.inputs     import Inputs
+from classes.processing import Processing
 from classes.features   import Misc
 
 
@@ -32,16 +33,16 @@ class Stats:
         try:
             if value == "TOTAL XP":
                 Navigation.misc()
-                Stats.total_xp = Inputs.ocr_notation(*coords.OCR_TOTAL_EXP)
+                Stats.total_xp = Processing.ocr_notation(*coords.OCR_TOTAL_EXP)
                 # print("OCR Captured TOTAL XP: {:,}".format(Stats.total_xp))
             elif value == "XP":
                 Navigation.exp()
-                Stats.xp = Inputs.ocr_number(*coords.OCR_EXP)
+                Stats.xp = Processing.ocr_number(*coords.OCR_EXP)
                 # print("OCR Captured Current XP: {:,}".format(Stats.xp))
             elif value == "PP":
                 Navigation.perks()
                 Misc.waste_click()
-                Stats.pp = Inputs.ocr_number(*coords.OCR_PP)
+                Stats.pp = Processing.ocr_number(*coords.OCR_PP)
                 # print("OCR Captured Current PP: {:,}".format(Stats.pp))
             Stats.OCR_failed = False
             Stats.OCR_failures = 0

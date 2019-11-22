@@ -1,76 +1,79 @@
 """Handles different challenges"""
 
-from classes.features   import BloodMagic, Rebirth
-from classes.navigation import Navigation
-from classes.inputs     import Inputs
-from classes.discord    import Discord
-from classes.window     import Window
-
-import coordinates  as coords
-import usersettings as userset
 import time
 from typing import List
 
+import coordinates as coords
+import usersettings as userset
+from classes.discord import Discord
+from classes.features import BloodMagic, Rebirth
+from classes.inputs import Inputs
+from classes.navigation import Navigation
+from classes.processing import Processing
+from classes.window import Window
 
-class cInfo:
-    def __init__(self, name = "", script = None, extra = []):
+from .challenges.augment     import augment
+from .challenges.basic       import basic
+from .challenges.blind       import blind
+from .challenges.equipment   import equipment
+from .challenges.laser       import laser
+from .challenges.level       import level
+from .challenges.ngu         import ngu
+from .challenges.rebirth     import rebirth
+from .challenges.timemachine import timemachine
+
+
+class ChInfo:
+    """Holds info about a challenge, including which script to run"""
+    def __init__(self, name="", script=None, extra=[]):
         self.name = name
         self.script = script
         self.extra = extra
 
-def init(ChList):
-    from .challenges.augment     import augment
-    from .challenges.basic       import basic
-    from .challenges.blind       import blind
-    from .challenges.equipment   import equipment
-    from .challenges.laser       import laser
-    from .challenges.level       import level
-    from .challenges.ngu         import ngu
-    from .challenges.rebirth     import rebirth
-    from .challenges.timemachine import timemachine
-
+def init(ch_list):
+    """PyLint wants a docstring. So this is a docstring"""
     def get24boss():
         try:
             x = coords.CHALLENGE.x
             y = coords.CHALLENGE.y + 3 * coords.CHALLENGEOFFSET
-            
+
             Navigation.challenges()
             Inputs.click(x, y, button="right")
             time.sleep(userset.LONG_SLEEP)
-            target = Inputs.ocr(*coords.OCR_CHALLENGE_24HC_TARGET)
-            target = Inputs.get_numbers(target)[0]
+            target = Processing.ocr(*coords.OCR_CHALLENGE_24HC_TARGET)
+            target = Processing.get_numbers(target)[0]
             return f"Target boss: {target}"
         except ValueError:
             Discord.send_message("Couldn't detect the target level of 24HC", Discord.ERROR)
             return "Couldn't detect the target level of 24HC"
 
-    ChList.append(cInfo("Basic", basic))
-    ChList.append(cInfo("No Augments", augment))
-    ChList.append(cInfo("24h", basic, [get24boss]))
-    ChList.append(cInfo("100 Level", level, [
+    ch_list.append(ChInfo("Basic", basic))
+    ch_list.append(ChInfo("No Augments", augment))
+    ch_list.append(ChInfo("24h", basic, [get24boss]))
+    ch_list.append(ChInfo("100 Level", level, [
         "IMPORTANT",
         "Set target level for energy buster to 67 and charge shot to 33.",
         "Disable 'Advance Energy' in Augmentation",
         "Disable beards if you cap ultra fast."
     ]))
-    ChList.append(cInfo("No Equipment", equipment))
-    ChList.append(cInfo("Troll", Window.shake, ["Do it yourself, fam."]))
-    ChList.append(cInfo("No Rebirth", rebirth))
-    ChList.append(cInfo("Laser Sword", laser, [
+    ch_list.append(ChInfo("No Equipment", equipment))
+    ch_list.append(ChInfo("Troll", Window.shake, ["Do it yourself, fam."]))
+    ch_list.append(ChInfo("No Rebirth", rebirth))
+    ch_list.append(ChInfo("Laser Sword", laser, [
         "LSC doesn't reset your number, make sure your number is high enough to make laser swords."
     ]))
-    ChList.append(cInfo("Blind", blind))
-    ChList.append(cInfo("No NGU", ngu))
-    ChList.append(cInfo("No Time Machine", timemachine))
-    
-ChList = []
-init(ChList)
-   
+    ch_list.append(ChInfo("Blind", blind))
+    ch_list.append(ChInfo("No NGU", ngu))
+    ch_list.append(ChInfo("No Time Machine", timemachine))
+
+Ch_List = []
+init(Ch_List)
+
 class Challenge:
     """Handles different challenges."""
     
     @staticmethod
-    def run_challenge(challenge :int, cont :bool =False) -> None:        
+    def run_challenge(challenge :int, cont :bool =False) -> None:
         """Run the selected challenge.
         
         Keyword arguments
@@ -78,7 +81,7 @@ class Challenge:
                      ending at 11 for No TM challenge
         cont      -- Whether the challenge is already running.
         """
-        global ChList
+        global Ch_List
         Navigation.challenges()
         
         if cont: pass
@@ -89,7 +92,7 @@ class Challenge:
             time.sleep(userset.LONG_SLEEP)
             Navigation.confirm()
         
-        chall = ChList[challenge-1]
+        chall = Ch_List[challenge-1]
         print(f"Starting {chall.name} Challenge script.")
         for x in chall.extra:
             if callable(x): print(x())
@@ -121,11 +124,10 @@ class Challenge:
     def list() -> List[str]:
         """Return the list of challenge names with their corresponding number.
         """
-        global ChList
+        global Ch_List
         
         l = []
-        for i in range(len(ChList)):
-            if i < 9: l.append(f"{i+1}  {ChList[i].name}")
-            else:     l.append(f"{i+1} {ChList[i].name}")
+        for i in range(len(Ch_List)):
+            if i < 9: l.append(f"{i+1}  {Ch_List[i].name}")
+            else:     l.append(f"{i+1} {Ch_List[i].name}")
         return l
-    

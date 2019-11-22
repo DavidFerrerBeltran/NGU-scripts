@@ -17,6 +17,7 @@ import usersettings as userset
 
 from classes.inputs     import Inputs
 from classes.navigation import Navigation
+from classes.processing import Processing
 from classes.window     import Window
 
 
@@ -25,8 +26,8 @@ class FightBoss:
     def get_current_boss() -> int:
         """Go to fight and read current boss number."""
         Navigation.menu("fight")
-        boss = Inputs.ocr(*coords.OCR_BOSS, debug=False)
-        return Inputs.remove_letters(boss)
+        boss = Processing.ocr(*coords.OCR_BOSS, debug=False)
+        return Processing.remove_letters(boss)
 
     @staticmethod
     def nuke(boss :int =None) -> None:
@@ -80,7 +81,7 @@ class MoneyPit:
                    the unassign setting in the game or swapping gear that
                    doesn't have e/m cap.
         """
-        if Inputs.check_pixel_color(*coords.IS_PIT_READY):
+        if Processing.check_pixel_color(*coords.IS_PIT_READY):
             if loadout:
                 Inventory.loadout(loadout)
             Navigation.menu("pit")
@@ -138,7 +139,7 @@ class Adventure:
         """
         Navigation.menu("adventure")
         Misc.waste_click()
-        if not Inputs.check_pixel_color(*coords.IS_IDLE):
+        if not Processing.check_pixel_color(*coords.IS_IDLE):
             Inputs.click(*coords.ABILITY_IDLE_MODE)
         if itopod or itopodauto:
             Adventure.current_adventure_zone = 0
@@ -205,7 +206,7 @@ class Adventure:
         Adventure.current_adventure_zone = zone
         Inputs.click(625, 500)  # click somewhere to move tooltip
         
-        if Inputs.check_pixel_color(*coords.IS_IDLE):
+        if Processing.check_pixel_color(*coords.IS_IDLE):
             Inputs.click(*coords.ABILITY_IDLE_MODE)
         
         end = time.time() + duration * 60
@@ -215,16 +216,16 @@ class Adventure:
                 continue
 
             Inputs.click(625, 500)  # click somewhere to move tooltip
-            if not Inputs.check_pixel_color(*coords.IS_DEAD):
+            if not Processing.check_pixel_color(*coords.IS_DEAD):
                 if bosses:
-                    if Inputs.check_pixel_color(*coords.IS_BOSS_CROWN):
+                    if Processing.check_pixel_color(*coords.IS_BOSS_CROWN):
                         enemy_alive = True
                         if manual:
                             Adventure.kill_enemy()
                         else:
                             while enemy_alive:
-                                enemy_alive = not Inputs.check_pixel_color(*coords.IS_DEAD)
-                                if Inputs.check_pixel_color(*coords.COLOR_REGULAR_ATTACK_READY):
+                                enemy_alive = not Processing.check_pixel_color(*coords.IS_DEAD)
+                                if Processing.check_pixel_color(*coords.COLOR_REGULAR_ATTACK_READY):
                                     Inputs.click(*coords.ABILITY_REGULAR_ATTACK)
                                 time.sleep(0.1)
                         if once:
@@ -264,7 +265,7 @@ class Adventure:
         
         # check if we're already in ITOPOD, otherwise enter
         # if auto is true, re-enter ITOPOD to make sure floor is optimal
-        if auto or not Inputs.check_pixel_color(*coords.IS_ITOPOD_ACTIVE):
+        if auto or not Processing.check_pixel_color(*coords.IS_ITOPOD_ACTIVE):
             Inputs.click(*coords.ITOPOD)
             Inputs.click(*coords.ITOPOD_END)
             # set end to 0 in case it's higher than start
@@ -272,15 +273,15 @@ class Adventure:
             Inputs.click(*coords.ITOPOD_AUTO)
             Inputs.click(*coords.ITOPOD_ENTER)
         
-        if Inputs.check_pixel_color(*coords.IS_IDLE):
+        if Processing.check_pixel_color(*coords.IS_IDLE):
             Inputs.click(*coords.ABILITY_IDLE_MODE)
         
         while time.time() < end:
             if fast:
                 Inputs.click(*coords.ABILITY_REGULAR_ATTACK, fast=True)
                 continue
-            if (Inputs.check_pixel_color(*coords.IS_ENEMY_ALIVE) and
-               Inputs.check_pixel_color(*coords.COLOR_REGULAR_ATTACK_READY)):
+            if (Processing.check_pixel_color(*coords.IS_ENEMY_ALIVE) and
+               Processing.check_pixel_color(*coords.COLOR_REGULAR_ATTACK_READY)):
                 Inputs.click(*coords.ABILITY_REGULAR_ATTACK)
             else:
                 time.sleep(0.01)
@@ -291,15 +292,15 @@ class Adventure:
     def kill_enemy() -> None:
         """Attempt to kill enemy in adventure using abilities."""
         start = time.time()
-        if Inputs.check_pixel_color(*coords.IS_IDLE):
+        if Processing.check_pixel_color(*coords.IS_IDLE):
             Inputs.click(*coords.ABILITY_IDLE_MODE)
-        while Inputs.check_pixel_color(*coords.IS_DEAD):
+        while Processing.check_pixel_color(*coords.IS_DEAD):
             time.sleep(.1)
             if time.time() > start + 5:
                 print("Couldn't detect enemy in kill_enemy()")
                 return
         queue = deque(Adventure.get_ability_queue())
-        while not Inputs.check_pixel_color(*coords.IS_DEAD):
+        while not Processing.check_pixel_color(*coords.IS_DEAD):
             if not queue:
                 queue = deque(Adventure.get_ability_queue())
             ability = queue.popleft()
@@ -329,7 +330,7 @@ class Adventure:
     def check_titan_status() -> List[int]:
         """Check to see if any titans are ready."""
         Inputs.click(*coords.MENU_ITEMS["adventure"], button="right")
-        text = Inputs.ocr(*coords.OCR_TITAN_RESPAWN).lower()
+        text = Processing.ocr(*coords.OCR_TITAN_RESPAWN).lower()
         ready = []
         i = 1
         for line in text.split('\n'):
@@ -349,14 +350,14 @@ class Adventure:
         mega   -- Use Mega Buff
         """
         Navigation.menu("adventure")
-        if Inputs.check_pixel_color(*coords.IS_IDLE):
+        if Processing.check_pixel_color(*coords.IS_IDLE):
             Inputs.click(*coords.ABILITY_IDLE_MODE)
         
         Inputs.click(*coords.LEFT_ARROW, button="right")
         charge = False
         parry = False
         if mega:
-            while not Inputs.check_pixel_color(*coords.COLOR_MEGA_BUFF_READY) or not charge or not parry:
+            while not Processing.check_pixel_color(*coords.COLOR_MEGA_BUFF_READY) or not charge or not parry:
                 queue = Adventure.get_ability_queue()
                 Inputs.click(625, 600)
                 if 2 in queue and not parry:
@@ -374,7 +375,7 @@ class Adventure:
                 time.sleep(userset.MEDIUM_SLEEP)
         
         else:
-            while not Inputs.check_pixel_color(*coords.COLOR_ULTIMATE_BUFF_READY) or not charge or not parry:
+            while not Processing.check_pixel_color(*coords.COLOR_ULTIMATE_BUFF_READY) or not charge or not parry:
                 queue = Adventure.get_ability_queue()
                 Inputs.click(625, 600)
                 if 2 in queue and not parry:
@@ -401,14 +402,14 @@ class Adventure:
         Adventure.current_adventure_zone = const.TITAN_ZONE[target - 1]
         time.sleep(userset.LONG_SLEEP)
         start = time.time()
-        while Inputs.check_pixel_color(*coords.IS_DEAD):  # wait for titan to spawn
+        while Processing.check_pixel_color(*coords.IS_DEAD):  # wait for titan to spawn
             time.sleep(0.05)
             if time.time() > start + 5:
                 print("Couldn't detect enemy in kill_titan()")
                 return
         
         queue = deque(Adventure.get_ability_queue())
-        while not Inputs.check_pixel_color(*coords.IS_DEAD):
+        while not Processing.check_pixel_color(*coords.IS_DEAD):
             if not queue:
                 queue = deque(Adventure.get_ability_queue())
             
@@ -469,7 +470,7 @@ class Adventure:
         if 14 in ready:
             Adventure.mega_buff_unlocked = True
         # heal if we need to heal
-        if Inputs.check_pixel_color(*coords.PLAYER_HEAL_THRESHOLD):
+        if Processing.check_pixel_color(*coords.PLAYER_HEAL_THRESHOLD):
             if 15 in ready:
                 queue.append(15)
             elif 12 in ready:
@@ -511,7 +512,7 @@ class Adventure:
         Adventure.current_adventure_zone = 0
         Navigation.menu("adventure")
         Inputs.click(625, 500)  # click somewhere to move tooltip
-        if Inputs.check_pixel_color(*coords.IS_IDLE):
+        if Processing.check_pixel_color(*coords.IS_IDLE):
             Inputs.click(*coords.ABILITY_IDLE_MODE)
         # check if we're already in ITOPOD, otherwise enter
         if not Adventure.itopod_tier_counts:
@@ -522,7 +523,7 @@ class Adventure:
                 # set end to 0 in case it's higher than start
                 Inputs.click(*coords.ITOPOD_ENTER)
                 Inputs.click(*coords.ADVENTURE_TOOLTIP)
-                count = Inputs.remove_letters(Inputs.ocr(*coords.OCR_AP_KILL_COUNT))
+                count = Processing.remove_letters(Processing.ocr(*coords.OCR_AP_KILL_COUNT))
                 print(f"Tier {tier}: {count}")
                 try:
                     count = int(count)
@@ -541,7 +542,7 @@ class Adventure:
             time.sleep(userset.LONG_SLEEP)
             kc = Adventure.itopod_tier_counts[next_tier]
             while kc > 0:
-                if Inputs.check_pixel_color(*coords.IS_ENEMY_ALIVE):
+                if Processing.check_pixel_color(*coords.IS_ENEMY_ALIVE):
                     Inputs.click(*coords.ABILITY_REGULAR_ATTACK)
                     
                     Adventure.itopod_kills += 1
@@ -667,11 +668,11 @@ class Inventory:
         time.sleep(userset.SHORT_SLEEP)
         
         if consume:
-            coord = Inputs.image_search(Window.x, Window.y, Window.x + 960, Window.y + 600,
-                                        Inputs.get_file_path("images", "consumable.png"), threshold)
+            coord = Processing.image_search(Window.x, Window.y, Window.x + 960, Window.y + 600,
+                                        Processing.get_file_path("images", "consumable.png"), threshold)
         else:
-            coord = Inputs.image_search(Window.x, Window.y, Window.x + 960, Window.y + 600,
-                                        Inputs.get_file_path("images", "transformable.png"), threshold)
+            coord = Processing.image_search(Window.x, Window.y, Window.x + 960, Window.y + 600,
+                                        Processing.get_file_path("images", "transformable.png"), threshold)
         
         if coord:
             Inputs.ctrl_click(*slot)
@@ -825,16 +826,16 @@ class BloodMagic:
         Inputs.click(600, 600)  # move tooltip
         
         if number is not None:
-            number_active = Inputs.check_pixel_color(*coords.COLOR_BM_AUTO_NUMBER)
+            number_active = Processing.check_pixel_color(*coords.COLOR_BM_AUTO_NUMBER)
             if (number and not number_active) or (not number and number_active):
                 Inputs.click(*coords.BM_AUTO_NUMBER)
         if drop is not None:
-            drop_active = Inputs.check_pixel_color(*coords.COLOR_BM_AUTO_DROP)
+            drop_active = Processing.check_pixel_color(*coords.COLOR_BM_AUTO_DROP)
             if (drop and not drop_active) or (not drop and drop_active):
                 Inputs.click(*coords.BM_AUTO_DROP)
         
         if gold is not None:
-            gold_active = Inputs.check_pixel_color(*coords.COLOR_BM_AUTO_GOLD)
+            gold_active = Processing.check_pixel_color(*coords.COLOR_BM_AUTO_GOLD)
             if (gold and not gold_active) or (not gold and gold_active):
                 Inputs.click(*coords.BM_AUTO_GOLD)
     
@@ -848,21 +849,21 @@ class BloodMagic:
             2 - MacGuffin alpha
             3 - MacGuffin beta
         """
-        if Inputs.check_pixel_color(*coords.COLOR_SPELL_READY):
+        if Processing.check_pixel_color(*coords.COLOR_SPELL_READY):
             Navigation.spells()
             Inputs.click(*coords.BM_PILL, button="right")
             spells = []
-            res = Inputs.ocr(*coords.OCR_BM_SPELL_TEXT)
+            res = Processing.ocr(*coords.OCR_BM_SPELL_TEXT)
             if "cooldown: 0.0s" in res.lower():
                 spells.append(1)
             
             Inputs.click(*coords.BM_GUFFIN_A, button="right")
-            res = Inputs.ocr(*coords.OCR_BM_SPELL_TEXT)
+            res = Processing.ocr(*coords.OCR_BM_SPELL_TEXT)
             if "cooldown: 0.0s" in res.lower():
                 spells.append(2)
             
             Inputs.click(*coords.BM_GUFFIN_B, button="right")
-            res = Inputs.ocr(*coords.OCR_BM_SPELL_TEXT)
+            res = Processing.ocr(*coords.OCR_BM_SPELL_TEXT)
             if "cooldown: 0.0s" in res.lower():
                 spells.append(3)
             
@@ -884,7 +885,7 @@ class BloodMagic:
             2 - MacGuffin alpha
             3 - MacGuffin beta
         """
-        if Inputs.check_pixel_color(*coords.COLOR_SPELL_READY):
+        if Processing.check_pixel_color(*coords.COLOR_SPELL_READY):
             targets = [0, coords.BM_PILL, coords.BM_GUFFIN_A, coords.BM_GUFFIN_B]
             start = time.time()
             BloodMagic.blood_magic(8)
@@ -940,8 +941,8 @@ class Wandoos:
         """
         Navigation.menu("wandoos")
         if magic:
-            return Inputs.check_pixel_color(*coords.COLOR_WANDOOS_MAGIC_BB)
-        return Inputs.check_pixel_color(*coords.COLOR_WANDOOS_ENERGY_BB)
+            return Processing.check_pixel_color(*coords.COLOR_WANDOOS_MAGIC_BB)
+        return Processing.check_pixel_color(*coords.COLOR_WANDOOS_ENERGY_BB)
 
 class NGU:
     @staticmethod
@@ -1125,13 +1126,13 @@ class Questing:
         Navigation.menu("questing")
         Misc.waste_click()  # move tooltip
         time.sleep(userset.SHORT_SLEEP)
-        return Inputs.ocr(*coords.OCR_QUESTING_LEFT_TEXT)
+        return Processing.ocr(*coords.OCR_QUESTING_LEFT_TEXT)
     
     @staticmethod
     def get_available_majors() -> int:
         """Return the amount of available major quests."""
         Navigation.menu("questing")
-        text = Inputs.ocr(*coords.OCR_QUESTING_MAJORS)
+        text = Processing.ocr(*coords.OCR_QUESTING_MAJORS)
         try:
             match = re.search(r"(\d+)\/\d+", text)
             if match:
@@ -1147,8 +1148,8 @@ class Questing:
         Inputs.click(*coords.INVENTORY_PAGE[0])
         bmp = Inputs.get_bitmap()
         for item in coords.QUESTING_FILENAMES:
-            path = Inputs.get_file_path("images", item)
-            loc = Inputs.image_search(Window.x, Window.y, Window.x + 960, Window.y + 600, path, 0.91, bmp=bmp)
+            path = Processing.get_file_path("images", item)
+            loc = Processing.image_search(Window.x, Window.y, Window.x + 960, Window.y + 600, path, 0.91, bmp=bmp)
             if loc:
                 Inputs.click(*loc, button="right")
                 if cleanup:
@@ -1226,7 +1227,7 @@ class Questing:
             text = Questing.get_quest_text()  # fetch new quest text
         
         if force:
-            if Inputs.check_pixel_color(*coords.COLOR_QUESTING_USE_MAJOR):
+            if Processing.check_pixel_color(*coords.COLOR_QUESTING_USE_MAJOR):
                 Inputs.click(*coords.QUESTING_USE_MAJOR)
             
             while not coords.QUESTING_ZONES[force] in text.lower():
@@ -1235,16 +1236,16 @@ class Questing:
                 text = Questing.get_quest_text()
         
         if subcontract:
-            if Inputs.check_pixel_color(*coords.QUESTING_IDLE_INACTIVE):
+            if Processing.check_pixel_color(*coords.QUESTING_IDLE_INACTIVE):
                 Inputs.click(*coords.QUESTING_SUBCONTRACT)
             return
         
         if major and coords.QUESTING_MINOR_QUEST in text.lower():  # check if current quest is minor
-            if Inputs.check_pixel_color(*coords.QUESTING_IDLE_INACTIVE):
+            if Processing.check_pixel_color(*coords.QUESTING_IDLE_INACTIVE):
                 Inputs.click(*coords.QUESTING_SUBCONTRACT)
             return
         
-        if not Inputs.check_pixel_color(*coords.QUESTING_IDLE_INACTIVE):  # turn off idle
+        if not Processing.check_pixel_color(*coords.QUESTING_IDLE_INACTIVE):  # turn off idle
             Inputs.click(*coords.QUESTING_SUBCONTRACT)
         if butter:
             Inputs.click(*coords.QUESTING_BUTTER)
@@ -1264,14 +1265,14 @@ class Questing:
                     current_time = time.time()
                     if coords.QUESTING_QUEST_COMPLETE in text.lower():
                         try:
-                            start_qp = int(Inputs.remove_letters(Inputs.ocr(*coords.OCR_QUESTING_QP)))
+                            start_qp = int(Processing.remove_letters(Processing.ocr(*coords.OCR_QUESTING_QP)))
                         except ValueError:
                             print("Couldn't fetch current QP")
                             start_qp = 0
                         Questing.start_complete()
                         Inputs.click(605, 510)  # move tooltip
                         try:
-                            current_qp = int(Inputs.remove_letters(Inputs.ocr(*coords.OCR_QUESTING_QP)))
+                            current_qp = int(Processing.remove_letters(Processing.ocr(*coords.OCR_QUESTING_QP)))
                         except ValueError:
                             print("Couldn't fetch current QP")
                             current_qp = 0
@@ -1284,7 +1285,7 @@ class Questing:
     @staticmethod
     def get_use_majors() -> bool:
         """This returns whether the "Use Major Quests if Available" checkbox is toggled ON."""
-        return Inputs.check_pixel_color(*coords.COLOR_QUESTING_USE_MAJOR)
+        return Processing.check_pixel_color(*coords.COLOR_QUESTING_USE_MAJOR)
     
     @staticmethod
     def toggle_use_majors() -> None:
@@ -1334,12 +1335,12 @@ class SelloutShop:
         AP and you currently have 0 muffins.
         """
         Navigation.sellout_boost_2()
-        muffin_status = Inputs.ocr(*coords.OCR_MUFFIN).lower()
+        muffin_status = Processing.ocr(*coords.OCR_MUFFIN).lower()
         if "have: 0" in muffin_status and "inactive" in muffin_status:
             print(muffin_status)
             if buy:
                 try:
-                    ap = int(Inputs.remove_letters(Inputs.ocr(*coords.OCR_AP)))
+                    ap = int(Processing.remove_letters(Processing.ocr(*coords.OCR_AP)))
                 except ValueError:
                     print("Couldn't get current AP")
                 if ap >= 50000:
@@ -1378,14 +1379,14 @@ class Rebirth:
         Navigation.rebirth()
         Inputs.click(*coords.CHALLENGE_BUTTON)
         time.sleep(userset.LONG_SLEEP)
-        active = Inputs.check_pixel_color(*coords.COLOR_CHALLENGE_ACTIVE)
+        active = Processing.check_pixel_color(*coords.COLOR_CHALLENGE_ACTIVE)
         
         if not active:
             return False
         if not getNum:
             return True
         
-        text = Inputs.ocr(*coords.OCR_CHALLENGE_NAME)
+        text = Processing.ocr(*coords.OCR_CHALLENGE_NAME)
         if "basic" in text.lower():
             return 1
         elif "augs" in text.lower():
@@ -1420,7 +1421,7 @@ class Rebirth:
         time.struct_time object.
         """
         Rebirth_time = namedtuple('Rebirth_time', 'days timestamp')
-        t = Inputs.ocr(*coords.OCR_REBIRTH_TIME)
+        t = Processing.ocr(*coords.OCR_REBIRTH_TIME)
         x = re.search(r"((?P<days>[0-9]+) days? )?((?P<hours>[0-9]+):)?(?P<minutes>[0-9]+):(?P<seconds>[0-9]+)", t)
         days = 0
         if x is None:
@@ -1535,7 +1536,7 @@ class Misc:
         Make sure no window in your browser pops up when you click the "Save"
         button, otherwise sit will mess with the rest of the script.
         """
-        if Inputs.check_pixel_color(*coords.IS_SAVE_READY):
+        if Processing.check_pixel_color(*coords.IS_SAVE_READY):
             Inputs.click(*coords.SAVE)
         return
     
@@ -1549,7 +1550,7 @@ class Misc:
         for x in range(8, width):
             dif = False
             for y in range(0, height):
-                if not Inputs.rgb_equal(first_pix, bmp.getpixel((x, y))):
+                if not Processing.rgb_equal(first_pix, bmp.getpixel((x, y))):
                     dif = True
                     break
             
@@ -1572,12 +1573,12 @@ class Misc:
         slices = []
         for _ in range(0, 3):
             for y in range(y1, height):
-                if not Inputs.rgb_equal(first_pix, bmp.getpixel((0, y))):
+                if not Processing.rgb_equal(first_pix, bmp.getpixel((0, y))):
                     y0 = y
                     break
             
             for y in range(y0, height, coords.BREAKDOWN_OFFSET_Y):
-                if Inputs.rgb_equal(first_pix, bmp.getpixel((0, y))):
+                if Processing.rgb_equal(first_pix, bmp.getpixel((0, y))):
                     y1 = y
                     break
             
@@ -1608,7 +1609,7 @@ class Misc:
         ress = []
         for img in imgs:
             if debug: img.show()
-            s = Inputs.ocr(0, 0, 0, 0, bmp=img, debug=ocrDebug, binf=220, sliced=True)
+            s = Processing.ocr(0, 0, 0, 0, bmp=img, debug=ocrDebug, binf=220, sliced=True)
             s = s.splitlines()
             s2 = [x for x in s if x != ""]  # remove empty lines
             ress.append(s2)
@@ -1620,7 +1621,7 @@ class Misc:
     @staticmethod
     def __get_res_val(resource, val) -> int:
         s = Misc.__get_res_breakdown(resource)[val][-1]
-        return Inputs.get_numbers(s)[0]
+        return Processing.get_numbers(s)[0]
     
     @staticmethod
     def get_pow(resource :int) -> int:
@@ -1658,12 +1659,12 @@ class Misc:
         """
         try:  # The sliced argument was meant for low values with get_pow/bars/cap
             # But also serves for low idle caps
-            if   resource == 1: res = Inputs.ocr(*coords.OCR_ENERGY, sliced=True)
-            elif resource == 2: res = Inputs.ocr(*coords.OCR_MAGIC , sliced=True)
-            elif resource == 3: res = Inputs.ocr(*coords.OCR_R3    , sliced=True)
+            if   resource == 1: res = Processing.ocr(*coords.OCR_ENERGY, sliced=True)
+            elif resource == 2: res = Processing.ocr(*coords.OCR_MAGIC , sliced=True)
+            elif resource == 3: res = Processing.ocr(*coords.OCR_R3    , sliced=True)
             else : raise RuntimeError("Invalid resource")
             
-            res = Inputs.get_numbers(res)[0]
+            res = Processing.get_numbers(res)[0]
             return res
             
         except IndexError:

@@ -8,6 +8,7 @@ import time
 from classes.features   import Misc
 from classes.inputs     import Inputs
 from classes.navigation import Navigation
+from classes.processing import Processing
 
 import coordinates  as coords
 import constants    as const
@@ -44,17 +45,17 @@ class Wishes:
         Inputs.click(*coords.BREAKDOWN_E)
         time.sleep(userset.MEDIUM_SLEEP)
         print("OCR is scanning a large area, this might take a few seconds")
-        e_list = self.fix_text(Inputs.ocr(*coords.OCR_BREAKDOWN))
+        e_list = self.fix_text(Processing.ocr(*coords.OCR_BREAKDOWN))
         Inputs.click(*coords.BREAKDOWN_M)
         time.sleep(userset.MEDIUM_SLEEP)
-        m_list = self.fix_text(Inputs.ocr(*coords.OCR_BREAKDOWN))
+        m_list = self.fix_text(Processing.ocr(*coords.OCR_BREAKDOWN))
         Inputs.click(*coords.BREAKDOWN_R)
         time.sleep(userset.MEDIUM_SLEEP)
-        r_list = self.fix_text(Inputs.ocr(*coords.OCR_BREAKDOWN))
+        r_list = self.fix_text(Processing.ocr(*coords.OCR_BREAKDOWN))
         Inputs.click(*coords.BREAKDOWN_MISC)
         time.sleep(userset.MEDIUM_SLEEP)
         Inputs.click_drag(*coords.BREAKDOWN_MISC_SCROLL_DRAG_START, *coords.BREAKDOWN_MISC_SCROLL_DRAG_END)
-        misc_list = self.fix_text(Inputs.ocr(*coords.OCR_BREAKDOWN))
+        misc_list = self.fix_text(Processing.ocr(*coords.OCR_BREAKDOWN))
 
         fields = ["total energy power:", "total magic power:", "total r power:", "total wish speed:"]
 
@@ -130,7 +131,7 @@ class Wishes:
                         match = re.match(r"(^[a-zA-Z\s]+:?)", line)
                         if match is not None:
                             fields.append(match.group(1))
-                            values.append(Inputs.remove_letters(line))
+                            values.append(Processing.remove_letters(line))
             else:
                 for line in text.splitlines():
 
