@@ -157,3 +157,8 @@ class Inputs:
         
         return Color.RGB((r, g, b))
     
+    @staticmethod
+    def get_cropped_bitmap(x_start :int =0, y_start :int =0, x_end :int =960, y_end :int =600) -> PIL_Image:
+            return Inputs.get_bitmap().crop(
+                (x_start + 8, y_start + 8, x_end + 8, y_end + 8))
+    
