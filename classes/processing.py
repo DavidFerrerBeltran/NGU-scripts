@@ -18,12 +18,7 @@ from classes.color  import Color, RGB_color
 
 Coordinates = Tuple[int, int]
 
-class Parsing:
-    @staticmethod
-    def get_cropped_bitmap(x_start :int =0, y_start :int =0, x_end :int =960, y_end :int =600) -> PIL_Image:
-            return Inputs.get_bitmap().crop(
-                (x_start + 8, y_start + 8, x_end + 8, y_end + 8))
-    
+class Processing:
     @staticmethod
     def pixel_search(color :Color, x_start :int, y_start :int, x_end :int, y_end :int) -> Optional[Coordinates]:
         """Find the first pixel with the supplied color within area.
@@ -157,7 +152,7 @@ class Parsing:
         y_end   += Window.y
 
         if bmp is None:
-            bmp = Parsing.get_cropped_bitmap(x_start, y_start, x_end, y_end)
+            bmp = Inputs.get_cropped_bitmap(x_start, y_start, x_end, y_end)
         
         elif cropb:
             # Bitmaps are created with a 8px border
@@ -209,8 +204,8 @@ class Parsing:
     @staticmethod
     def get_numbers(s :str) -> Iterable[int]:
         """Finds all numbers in a string"""
-        s = Parsing.remove_spaces(s)
-        s = Parsing.remove_number_separators(s)
+        s = Processing.remove_spaces(s)
+        s = Processing.remove_number_separators(s)
         match = re.findall(r"(\d+(\.\d+E\+\d+)?)", s)
         nums = [int(float(x[0])) for x in match]
         return nums
@@ -225,12 +220,12 @@ class Parsing:
     @staticmethod
     def ocr_number(x_1 :int, y_1 :int, x_2 :int, y_2 :int) -> int:
         """Remove all non-digits."""
-        return int(Parsing.remove_letters(Parsing.ocr(x_1, y_1, x_2, y_2)))
+        return int(Processing.remove_letters(Processing.ocr(x_1, y_1, x_2, y_2)))
 
     @staticmethod
     def ocr_notation(x_1 :int, y_1 :int, x_2 :int, y_2 :int) -> int:
         """Convert scientific notation from string to int."""
-        return int(float(Parsing.ocr(x_1, y_1, x_2, y_2)))
+        return int(float(Processing.ocr(x_1, y_1, x_2, y_2)))
 
     @staticmethod
     def save_screenshot() -> None:
