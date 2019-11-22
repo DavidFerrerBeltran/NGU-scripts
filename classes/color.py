@@ -10,7 +10,7 @@ class Color:
         self.hex = hex
         
     def __eq__(a :Color, b :Color) -> bool:
-        return a.hex = b.hex
+        return a.rgb == b.rgb
     
     def __str__(self :Color) -> str:
         return self.hex
