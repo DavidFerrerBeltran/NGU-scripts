@@ -1,11 +1,11 @@
 """Class that handles wish allocation."""
-from decimal import Decimal
+from decimal   import Decimal
 from functools import reduce
 import math
 import re
 import time
 
-from classes.features   import Misc
+from classes.misc       import Misc
 from classes.inputs     import Inputs
 from classes.navigation import Navigation
 from classes.processing import Processing

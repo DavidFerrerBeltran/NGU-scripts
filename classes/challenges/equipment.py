@@ -1,10 +1,12 @@
 """Contains functions for running a no equipment challenge."""
-from classes.features import Rebirth, Wandoos, BloodMagic, MoneyPit
-from classes.features import GoldDiggers, Augmentation, FightBoss, Adventure
-from classes.inputs   import Inputs
+import time
 
 import coordinates as coords
-import time
+
+from classes.features   import Adventure, Augmentation, BloodMagic, FightBoss
+from classes.features   import GoldDiggers, MoneyPit, Wandoos
+from classes.misc       import Rebirth
+from classes.processing import Processing
 
 
 def speedrun(duration):
@@ -19,18 +21,18 @@ def speedrun(duration):
     time.sleep(2)
 
     FightBoss.fight()
-    Adventure.adventure(highest=True)
+    Adventure.set_zone()
     time.sleep(2)
 
-    rb_time = Rebirth.get_rebirth_time()
+    rb_time = Rebirth.time_()
     while int(rb_time.timestamp.tm_min) < duration:
-        GoldDiggers.gold_diggers(diggers)
-        Wandoos.wandoos(True, True)
-        Augmentation.augments({"SM": 1}, coords.INPUT_MAX)
-        if not Inputs.check_pixel_color(*coords.COLOR_TM_LOCKED):
+        GoldDiggers.activate(diggers)
+        Wandoos.cap_dumps(True, True)
+        Augmentation.assign_energy({"SM": 1}, coords.INPUT_MAX)
+        if not Processing.check_pixel_color(*coords.COLOR_TM_LOCKED):
             BloodMagic.blood_magic(6)
         FightBoss.nuke()
-        rb_time = Rebirth.get_rebirth_time()
+        rb_time = Rebirth.time_()
     MoneyPit.pit()
     MoneyPit.spin()
     return
@@ -39,24 +41,24 @@ def equipment():
     """Run no equipment challenge."""
     Wandoos.set_wandoos(0)  # wandoos 98, use 1 for meh
 
-    for x in range(8):
+    for _ in range(8):
         speedrun(3)
         if not Rebirth.check_challenge():
             return
-        Rebirth.do_rebirth()
-    for x in range(5):
+        Rebirth.rebirth()
+    for _ in range(5):
         speedrun(7)
         if not Rebirth.check_challenge():
             return
-        Rebirth.do_rebirth()
-    for x in range(5):
+        Rebirth.rebirth()
+    for _ in range(5):
         speedrun(12)
         if not Rebirth.check_challenge():
             return
-        Rebirth.do_rebirth()
-    for x in range(5):
+        Rebirth.rebirth()
+    for _ in range(5):
         speedrun(60)
         if not Rebirth.check_challenge():
             return
-        Rebirth.do_rebirth()
+        Rebirth.rebirth()
     return

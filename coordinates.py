@@ -7,7 +7,7 @@ OCRBox = namedtuple('OCRBox', 'x1 y1 x2 y2')
 
 # USELESSFUL
 
-WASTE_CLICK = Pixel(900, 590)
+WASTE_CLICK = Pixel(950, 590)
 
 # COLORS
 TOP_LEFT_COLOR = '000408'
@@ -45,10 +45,15 @@ ITOPOD_START = Pixel(630, 200)
 ITOPOD_END = Pixel(630, 240)
 ITOPOD_ENTER = Pixel(625, 330)
 ITOPOD_AUTO = Pixel(710, 215)
+ITOPOD_BLUE = Pixel(548, 357)
+ITOPOD_LAZY = Pixel(548, 393)
 HEALTH = Pixel(735, 416)
 ADVENTURE_TOOLTIP = Pixel(445, 45)
 OCR_AP_KILL_COUNT = OCRBox(470, 115, 740, 145)
 OCR_TITAN_RESPAWN = OCRBox(260, 150, 525, 310)
+OCR_ADV_ZONE = OCRBox(752, 198, 906, 225)
+OCR_ADV_LOG = OCRBox(311, 447, 937, 588)
+OCR_ENEMY_HP = OCRBox(795, 408, 870, 425)
 
 ABILITY_ROW1X = 426
 ABILITY_ROW2X = 321
@@ -57,15 +62,13 @@ ABILITY_ROW1Y = 113
 ABILITY_ROW2Y = 150
 ABILITY_ROW3Y = 186
 
-# ROW 1 ABILITIES
-ABILITY_IDLE_MODE = Pixel(330, 105)
-ABILITY_REGULAR_ATTACK = Pixel(430, 105)
-
 ABILITY_ANCHOR_PIXEL = Pixel(321, 113)
 ABILITY_OFFSETX = 106
 ABILITY_OFFSETY = 37
 
 # ROW 1 ABILITIES
+ABILITY_IDLE_MODE = Pixel(330, 105)
+ABILITY_REGULAR_ATTACK = Pixel(430, 105)
 ABILITY_STRONG_ATTACK = Pixel(531, 113)
 ABILITY_PARRY = Pixel(636, 113)
 ABILITY_PIERCING_ATTACK = Pixel(741, 113)
@@ -101,8 +104,9 @@ TITAN_PT = {"GRB": {"p": 1.3e3, "t": 1.3e3}, "GCT": {"p": 5e3, "t": 4e3},
             "BEAST1": {"p": 6e8, "t": 6e8}, "BEAST2": {"p": 6e9, "t": 6e9},
             "BEAST3": {"p": 6e10, "t": 6e10}, "BEAST4": {"p": 6e11, "t": 6e11}}
 
-TITAN_ZONE = {"GRB": 7, "GCT": 9, "jake": 12, "UUG": 15, "walderp": 17,
-              "BEAST1": 20, "BEAST2": 20, "BEAST3": 20, "BEAST4": 20}
+TITAN_ZONE = {"GRB": 8, "GCT": 10, "jake": 13, "UUG": 16, "walderp": 18,
+              "BEAST1": 21, "BEAST2": 21, "BEAST3": 21, "BEAST4": 21,
+              "GREASY NERD": 25, "GODMOTHER": 28, "EXILE": 32, "IT HUNGERS": 36}
 
 OCR_ADV_POW = OCRBox(370, 296, 483, 313)
 OCR_ADV_TOUGH = OCRBox(406, 313, 506, 330)
@@ -113,6 +117,7 @@ OCR_COMBAT_LOG = OCRBox(310, 496, 600, 589)
 #MENU OFFSETS
 
 MENU_OFFSET_X = 230
+MENU_BASIC = Pixel(MENU_OFFSET_X, 45)
 MENU_FIGHT = Pixel(MENU_OFFSET_X, 75)
 MENU_PIT = Pixel(MENU_OFFSET_X, 105)
 MENU_ADVENTURE = Pixel(MENU_OFFSET_X, 135)
@@ -130,6 +135,7 @@ MENU_QUESTING = Pixel(MENU_OFFSET_X, 465)
 MENU_HACKS = Pixel(MENU_OFFSET_X, 495)
 MENU_WISHES = Pixel(MENU_OFFSET_X, 520)
 MENU_ITEMS = {
+    'basictraining': MENU_BASIC,
     'fight': MENU_FIGHT, 'pit': MENU_PIT, 'adventure': MENU_ADVENTURE,
     'inventory': MENU_INVENTORY, 'augmentations': MENU_AUGMENTATIONS,
     'advtraining': MENU_ADV_TRAINING, 'timemachine': MENU_TIME_MACHINE,
@@ -437,7 +443,8 @@ BREAKDOWN_MISC_SCROLL_DRAG_END = Pixel(956, 150)
 
 # PIXEL CHECKS
 IS_BOSS_CROWN = ColorPixel(735, 282, 'F7EF29')
-IS_ENEMY_ALIVE = ColorPixel(*HEALTH, ['D93030', 'EB3434', 'DB3131', 'DA3030','E73333']) # If you reduce the enemy healthbar to 1px, the color changes for some reason
+IS_ENEMY_ALIVE = ColorPixel(*HEALTH, ['D93030', 'EB3434', 'DB3131', 'DA3030', 'E73333']) # If you reduce the enemy healthbar to 1px, the color changes for some reason
+IS_ENEMY_ALIVE_2 = ColorPixel(HEALTH.x -1, HEALTH.y, '7D1C1C') # If you reduce the enemy healthbar to 0px, the border changes color indicating enemy still alive
 IS_DEAD = ColorPixel(*HEALTH, ['EBEBEB', 'ECECEC','FAFAFA'])
 IS_ITOPOD_ACTIVE = ColorPixel(594, 277, '000000') # Checks color of pixel in "Floor x" text
 IS_IDLE = ColorPixel(416, 86, 'FFEB04') # top right yellow pixel

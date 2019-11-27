@@ -1,36 +1,47 @@
+"""
+This handles color data
+"""
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Tuple, Union
 
 RGB_color = Tuple[int, int, int]
 hex_color = str
 
 class Color:
-    # Do not use Color(rgb, hex) to initialize a Color object
-    # Use RGB(r) or hex(h) instead
-    def __init__(self :Color, r :RGB_color, h :hex_color) -> None:
-        self.r = r
-        self.h = h
+    BLACK = None
+    WHITE = None
 
+    def __init__(self :Color, col :Union[RGB_color, hex_color]) -> None:
+        """Create a color object by either passing a hex or RGB color."""
+        if isinstance(col, hex_color):
+            self.h = col
+            self.r = Color.hex_to_rgb(col)
+        elif (
+            isinstance(col, tuple) and len(col) == 3 and
+            isinstance(col[0], int) and isinstance(col[1], int) and isinstance(col[2], int)
+        ):
+            self.r = col
+            self.h = Color.rgb_to_hex(col)
+        else: raise TypeError("called Color(col) with a parameter that's neither hex or RGB.")
+
+    # solves pylint complaining about no self as first argument
     # pylint: disable=E0213
-    def __eq__(a :Color, b :Color) -> bool:
-        return a.r == b.r
+    def __eq__(a :Color, b :Union[Color, RGB_color, hex_color]) -> bool:
+        if isinstance(b, Color):
+            return a.r == b.r
+        else:
+            return a == Color(b)
     
     def __str__(self :Color) -> str:
         return self.h
-    
-    @staticmethod
-    def RGB(r :RGB_color) -> Color:
-        return Color(r, Color.rgb_to_hex(r))
         
-    @staticmethod
-    def hex(h :hex_color) -> Color:
-        return Color(Color.hex_to_rgb(h), h)
-        
-    def get_RGB(self :Color) -> RGB_color:
+    def RGB(self :Color) -> RGB_color:
+        """Get color in RGB form"""
         return self.r
     
-    def get_hex(self :Color) -> hex_color:
+    def hex(self :Color) -> hex_color:
+        """Get color in hex form"""
         return self.h
     
     @staticmethod
@@ -42,3 +53,6 @@ class Color:
     def hex_to_rgb(string :hex_color) -> RGB_color:
         """Convert hex value to RGB."""
         return tuple(int(string[i:i + 2], 16) for i in (0, 2, 4))
+
+Color.BLACK = Color("000000")
+Color.WHITE = Color("FFFFFF")

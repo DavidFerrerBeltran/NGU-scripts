@@ -16,37 +16,49 @@ from classes.color  import Color
 
 class Inputs:
     """This class handles inputs."""
+    
+    class Const:
+        API = None
 
+        MOUSE_LEFT  = 1
+        MOUSE_RIGHT = 2
+
+        ARROW_LEFT  = 1
+        ARROW_RIGHT = 2
+        ARROW_UP    = 3
+        ARROW_DOWN  = 4
+    
     @staticmethod
-    def click(x :int, y :int, button :str ="left", fast :bool =False) -> None:
+    def click(x :int, y :int, button :int =MOUSE_LEFT, *, fast :bool =False) -> None:
         """Click at pixel xy."""
         x += Window.x
         y += Window.y
         lParam = win32api.MAKELONG(x, y)
+
         # MOUSEMOVE event is required for game to register clicks correctly
         win32gui.PostMessage(Window.id, wcon.WM_MOUSEMOVE, 0, lParam)
+
         while (win32api.GetKeyState(wcon.VK_CONTROL) < 0 or
                win32api.GetKeyState(wcon.VK_SHIFT) < 0 or
                win32api.GetKeyState(wcon.VK_MENU) < 0):
             time.sleep(0.005)
-        if button == "left":
-            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONDOWN,
-                                 wcon.MK_LBUTTON, lParam)
-            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONUP,
-                                 wcon.MK_LBUTTON, lParam)
-        else:
-            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONDOWN,
-                                 wcon.MK_RBUTTON, lParam)
-            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONUP,
-                                 wcon.MK_RBUTTON, lParam)
+        
+        if   button == Inputs.Const.MOUSE_LEFT:
+            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONDOWN, wcon.MK_LBUTTON, lParam)
+            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONUP, wcon.MK_LBUTTON, lParam)
+        elif button == Inputs.Const.MOUSE_RIGHT:
+            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONDOWN, wcon.MK_RBUTTON, lParam)
+            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONUP, wcon.MK_RBUTTON, lParam)
+        else: raise RuntimeError("Wrong mouse button.")
+        
         # Sleep lower than 0.1 might cause issues when clicking in succession
         if fast:
             time.sleep(userset.FAST_SLEEP)
         else:
             time.sleep(userset.MEDIUM_SLEEP)
-
+        
     @staticmethod
-    def click_drag(x :int, y :int, x2 :int, y2 :int) -> None:
+    def click_drag(x :int, y :int, x2 :int, y2 :int, button :int =MOUSE_LEFT) -> None:
         """Click at pixel xy."""
         x += Window.x
         y += Window.y
@@ -54,45 +66,65 @@ class Inputs:
         y2 += Window.y
         lParam = win32api.MAKELONG(x, y)
         lParam2 = win32api.MAKELONG(x2, y2)
+
         # MOUSEMOVE event is required for game to register clicks correctly
         win32gui.PostMessage(Window.id, wcon.WM_MOUSEMOVE, 0, lParam)
+
         while (win32api.GetKeyState(wcon.VK_CONTROL) < 0 or
                win32api.GetKeyState(wcon.VK_SHIFT) < 0 or
                win32api.GetKeyState(wcon.VK_MENU) < 0):
             time.sleep(0.005)
-        win32gui.PostMessage(Window.id, wcon.WM_LBUTTONDOWN,
-                             wcon.MK_LBUTTON, lParam)
+        
+        if   button == Inputs.Const.MOUSE_LEFT:
+            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONDOWN, wcon.MK_LBUTTON, lParam)
+        elif button == Inputs.Const.MOUSE_RIGHT:
+            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONDOWN, wcon.MK_LBUTTON, lParam)
+        else: raise RuntimeError("Wrong mouse button.")
+        
         time.sleep(userset.LONG_SLEEP * 2)
         win32gui.PostMessage(Window.id, wcon.WM_MOUSEMOVE, 0, lParam2)
         time.sleep(userset.SHORT_SLEEP)
-        win32gui.PostMessage(Window.id, wcon.WM_LBUTTONUP,
-                             wcon.MK_LBUTTON, lParam2)
+
+        if   button == Inputs.Const.MOUSE_LEFT:
+            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONUP, wcon.MK_LBUTTON, lParam2)
+        elif button == Inputs.Const.MOUSE_RIGHT:
+            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONUP, wcon.MK_LBUTTON, lParam2)
+        
         time.sleep(userset.MEDIUM_SLEEP)
 
     @staticmethod
-    def ctrl_click(x :int, y :int) -> None:
+    def ctrl_click(x :int, y :int, button :int =MOUSE_LEFT) -> None:
         """Clicks at pixel x, y while simulating the CTRL button to be down."""
         x += Window.x
         y += Window.y
         lParam = win32api.MAKELONG(x, y)
+
         while (win32api.GetKeyState(wcon.VK_CONTROL) < 0 or
                win32api.GetKeyState(wcon.VK_SHIFT) < 0 or
                win32api.GetKeyState(wcon.VK_MENU) < 0):
             time.sleep(0.005)
 
         win32gui.PostMessage(Window.id, wcon.WM_KEYDOWN, wcon.VK_CONTROL, 0)
-        win32gui.PostMessage(Window.id, wcon.WM_LBUTTONDOWN,
-                             wcon.MK_LBUTTON, lParam)
-        win32gui.PostMessage(Window.id, wcon.WM_LBUTTONUP,
-                             wcon.MK_LBUTTON, lParam)
+
+        if   button == Inputs.Const.MOUSE_LEFT:
+            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONDOWN, wcon.MK_LBUTTON, lParam)
+            win32gui.PostMessage(Window.id, wcon.WM_LBUTTONUP, wcon.MK_LBUTTON, lParam)
+        elif button == Inputs.Const.MOUSE_RIGHT:
+            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONDOWN, wcon.MK_RBUTTON, lParam)
+            win32gui.PostMessage(Window.id, wcon.WM_RBUTTONUP, wcon.MK_RBUTTON, lParam)
+        else: raise RuntimeError("Wrong mouse button.")
+
         win32gui.PostMessage(Window.id, wcon.WM_KEYUP, wcon.VK_CONTROL, 0)
         time.sleep(userset.MEDIUM_SLEEP)
 
     @staticmethod
-    def send_arrow_press(left :bool) -> None:
-        """Sends either a left or right arrow key press"""
-        if left: key = wcon.VK_LEFT
-        else   : key = wcon.VK_RIGHT
+    def send_arrow(arrow :int) -> None:
+        """Sends an arrow key press"""
+        if   arrow == Inputs.Const.ARROW_LEFT:  key = wcon.VK_LEFT
+        elif arrow == Inputs.Const.ARROW_RIGHT: key = wcon.VK_RIGHT
+        elif arrow == Inputs.Const.ARROW_UP:    key = wcon.VK_UP
+        elif arrow == Inputs.Const.ARROW_DOWN:  key = wcon.VK_DOWN
+        else: raise RuntimeError("Wrong arrow key.")
         
         win32gui.PostMessage(Window.id, wcon.WM_KEYDOWN, key, 0)
         time.sleep(0.05)
@@ -115,7 +147,7 @@ class Inputs:
             win32gui.PostMessage(Window.id, wcon.WM_KEYDOWN, vkc, 0)
     
     @staticmethod
-    def get_bitmap() -> PIL_Image:
+    def get_bitmap(*, debug :bool = False) -> PIL_Image:
         """Get and return a bitmap of the Window."""
         left, top, right, bot = win32gui.GetWindowRect(Window.id)
         w = right - left
@@ -131,20 +163,25 @@ class Inputs:
         bmpstr = save_bitmap.GetBitmapBits(True)
 
         # This creates an Image object from Pillow
-        bmp = image.frombuffer('RGB',
-                               (bmpinfo['bmWidth'],
-                                bmpinfo['bmHeight']),
+        bmp = image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
                                bmpstr, 'raw', 'BGRX', 0, 1)
 
         win32gui.DeleteObject(save_bitmap.GetHandle())
         save_dc.DeleteDC()
         mfc_dc.DeleteDC()
         win32gui.ReleaseDC(Window.id, hwnd_dc)
-        # bmp.save("asdf.png")
+        
+        if debug: bmp.save("asdf.png")
         return bmp
 
     @staticmethod
-    def get_pixel_color(x :int, y :int, debug :bool =False) -> Color:
+    def get_cropped_bitmap(x :int =0, y :int =0, x2 :int =960, y2 :int =600) -> PIL_Image:
+        """Get, crop and return a bitmap of the Window."""
+        crop_rect = (x + 8, y + 8, x2 + 8, y2 + 8)
+        return Inputs.get_bitmap().crop(crop_rect)
+    
+    @staticmethod
+    def get_pixel_color(x :int, y :int, *, debug :bool =False) -> Color:
         """Get the color of selected pixel in HEX."""
         dc = win32gui.GetWindowDC(Window.id)
         rgba = win32gui.GetPixel(dc, x + 8 + Window.x, y + 8 + Window.y)
@@ -153,12 +190,7 @@ class Inputs:
         g = rgba >> 8 & 0xff
         b = rgba >> 16 & 0xff
         
-        if debug: print(Color.RGB((r, g, b)))
+        if debug: print(Color((r, g, b)))
         
-        return Color.RGB((r, g, b))
-    
-    @staticmethod
-    def get_cropped_bitmap(x_start :int =0, y_start :int =0, x_end :int =960, y_end :int =600) -> PIL_Image:
-            return Inputs.get_bitmap().crop(
-                (x_start + 8, y_start + 8, x_end + 8, y_end + 8))
+        return Color((r, g, b))
     

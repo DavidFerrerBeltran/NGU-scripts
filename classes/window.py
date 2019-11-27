@@ -35,7 +35,7 @@ class Window:
         if debug:
             window_name = "debugg"
         else:
-            window_name = "play ngu idle"
+            window_name = "ngu idle"
 
         top_windows = []
         windows = []

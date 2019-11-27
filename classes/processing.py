@@ -1,22 +1,24 @@
+"""Processes data gathered from the game, most notably pixel_checks and OCR."""
+
 import datetime
 import os
 import re
 
 from typing import Iterable, List, Optional, Tuple, Union
 
-from PIL       import Image as image # image module
-from PIL.Image import Image as PIL_Image # image.image class
+from PIL import Image as image
 from PIL import ImageFilter
 import cv2
 import numpy
 
 import pytesseract
 
-from classes.window import Window
+from classes.color  import Color, RGB_color, hex_color
 from classes.inputs import Inputs
-from classes.color  import Color, RGB_color
+from classes.window import Window
 
 Coordinates = Tuple[int, int]
+PIL_Image   = image.Image
 
 class Processing:
     @staticmethod
@@ -34,7 +36,7 @@ class Processing:
                 if y > height or x > width:
                     continue
                 pix_color = bmp.getpixel((x, y))
-                if pix_color == color.get_RGB():
+                if pix_color == color.RGB():
                     return x - 8, y - 8
         
         return None
@@ -115,6 +117,15 @@ class Processing:
         return lst
 
     @staticmethod
+    def save_screenshot() -> None:
+        """Save a screenshot of the game."""
+        bmp = Inputs.get_bitmap()
+        bmp = bmp.crop((Window.x + 8, Window.y + 8, Window.x + 968, Window.y + 608))
+        if not os.path.exists("screenshots"):
+            os.mkdir("screenshots")
+        bmp.save('screenshots/' + datetime.datetime.now().strftime('%d-%m-%y-%H-%M-%S') + '.png')
+    
+    @staticmethod
     def rgb_equal(a :RGB_color, b :RGB_color) -> bool:
         return a == b # Tuples are this easy to compare
     
@@ -157,28 +168,28 @@ class Processing:
         elif cropb:
             # Bitmaps are created with a 8px border
             bmp = bmp.crop((x_start + 8, y_start + 8, x_end + 8, y_end + 8))
+
+        if filter: # Resizing and sharpening
+            *_, right, lower = bmp.getbbox()
+            bmp = bmp.resize((right * 4, lower * 4), image.BICUBIC)  # Resize image
+            bmp = bmp.filter(ImageFilter.SHARPEN)
+            if debug: bmp.save("debug_ocr_filter.png")
         
         if binf > 0: # Binarizing Filter
             fn = lambda x : 255 if x > binf else 0
             bmp = bmp.convert('L') # To Monochrome
             bmp = bmp.point(fn, mode='1')
             if debug: bmp.save("debug_ocr_whiten.png")
-        
-        if filter: # Resizing and sharpening
-            *_, right, lower = bmp.getbbox()
-            bmp = bmp.resize((right * 4, lower * 4), image.BICUBIC)  # Resize image
-            bmp = bmp.filter(ImageFilter.SHARPEN)
-            if debug: bmp.save("debug_ocr_filter.png")
             
         if sliced: s = pytesseract.image_to_string(bmp, config='--psm 6')
         else:      s = pytesseract.image_to_string(bmp, config='--psm 4')
         
         return s
-
+    
     @staticmethod
-    def check_pixel_color(x :int, y :int, checks :Union[str, Iterable[str]]) -> bool:
+    def check_pixel_color(x :int, y :int, checks :Union[hex_color, Iterable[hex_color]]) -> bool:
         """Check if coordinate matches with one or more colors."""
-        color = Inputs.get_pixel_color(x, y).get_hex()
+        color = Inputs.get_pixel_color(x, y).hex()
         if isinstance(checks, list):
             for check in checks:
                 if check == color:
@@ -200,6 +211,11 @@ class Processing:
     def remove_letters(s :str) -> str:
         """Remove all non digit characters from string."""
         return re.sub('[^0-9]', '', s)
+
+    @staticmethod
+    def one_line(s :str) -> str:
+        """Removes endlines from a string"""
+        return " ".join(s.split("\n"))
 
     @staticmethod
     def get_numbers(s :str) -> Iterable[int]:
@@ -226,13 +242,3 @@ class Processing:
     def ocr_notation(x_1 :int, y_1 :int, x_2 :int, y_2 :int) -> int:
         """Convert scientific notation from string to int."""
         return int(float(Processing.ocr(x_1, y_1, x_2, y_2)))
-
-    @staticmethod
-    def save_screenshot() -> None:
-        """Save a screenshot of the game."""
-        bmp = Inputs.get_bitmap()
-        bmp = bmp.crop((Window.x + 8, Window.y + 8, Window.x + 968, Window.y + 608))
-        if not os.path.exists("screenshots"):
-            os.mkdir("screenshots")
-        bmp.save('screenshots/' + datetime.datetime.now().strftime('%d-%m-%y-%H-%M-%S') + '.png')
-        

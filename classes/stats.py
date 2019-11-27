@@ -5,13 +5,13 @@ from typing import Tuple
 import datetime
 import time
 
-import coordinates  as coords
-import usersettings as userset
-
 from classes.helper     import Helper
 from classes.navigation import Navigation
 from classes.processing import Processing
-from classes.features   import Misc
+from classes.misc       import Misc
+
+import coordinates  as coords
+import usersettings as userset
 
 
 class Stats:

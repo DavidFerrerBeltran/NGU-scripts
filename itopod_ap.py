@@ -8,5 +8,5 @@ Helper.init(True)
 Helper.requirements()
 
 while True:  # main loop
-    Adventure.itopod_ap(600)
+    Adventure.old_itopod_ap(600)
     MoneyPit.pit()

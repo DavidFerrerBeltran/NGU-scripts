@@ -129,19 +129,19 @@ WISH_BLACKLIST = [8, 21, 23, 27, 45, 58, 59, 76]
 WISH_DISCLAIMER = "Disclaimer: this class is experimental, expect issues and crashes. Please do report them on discord or open an issue on github if you encounter one. I recommend using the color 'green' as your R3 color in the settings, it yields the best OCR results in my testing."
 TITAN_ZONE = [7, 9, 12, 15, 17, 20, 24, 27, 31, 35]
 DEFAULT_DIGGER_ORDER = [12, 4, 9, 10, 11, 1, 2, 3, 5, 6, 7, 8]
-QUEST_ZONE_MAP = {"sewers": 2, "forest": 3, "high security base": 6, "the 2d universe": 10,
-                  "a very strange place": 13, "mega lands": 14, "the beardverse": 16,
-                  "chocolate world": 21, "the evilverse": 22, "pretty pink princess land": 23}
+QUEST_ZONE_MAP = {"sewers": 3, "forest": 4, "high security base": 7, "2d universe": 11,
+                  "a very strange place": 14, "mega lands": 15, "the beardverse": 17,
+                  "chocolate world": 22, "the evilverse": 23, "pretty pink princess land": 24}
 
-ZONE_MAP = {"safe zone: awakening site": 0, "tutorial zone": 1, "sewers": 2, "forest": 3,
-            "cave of many things": 4, "the sky": 5, "high security base": 6,
-            "gordon ramsay bolton": 7, "clock dimension": 8, "grand corrupted tree": 9,
-            "the 2d universe": 10, "ancient battlefield": 11, "jake from accounting": 12,
-            "a very strange place": 13, "mega lands": 14, "uug, the unmentionable": 15,
-            "the beardverse": 16, "walderp": 17, "badly drawn world": 18, "boring-ass earth": 19,
-            "the beast": 20, "chocolate world": 21, "the evilverse": 22,
-            "pretty pink princess land": 23, "greasy nerd": 24, "meta land": 25,
-            "interdimensional party": 26, "the godmother": 27, "typo zonw": 28,
-            "the fad-lands": 29, "jrpgville": 30, "the exile": 31, "the rad-lands": 32,
-            "back to school": 33, "the west world": 34, "it hungers": 35,
+ZONE_MAP = {"safe zone: awakening": 1, "tutorial zone": 2, "sewers": 3, "forest": 4,
+            "cave of many things": 5, "the sky": 6, "high security base": 7,
+            "gordon ramsay bolton": 8, "clock dimension": 9, "grand corrupted tree": 10,
+            "the 2d universe": 11, "ancient battlefield": 12, "jake from accounting": 13,
+            "a very strange place": 14, "mega lands": 15, "uug the": 16,
+            "the beardverse": 17, "walderp": 18, "badly drawn world": 19, "boring-ass earth": 20,
+            "the beast": 21, "chocolate world": 22, "the evilverse": 23,
+            "pretty pink princess land": 24, "greasy nerd": 25, "meta land": 26,
+            "interdimensional party": 27, "the godmother": 28, "typo zonw": 29,
+            "the fad-lands": 30, "jrpgville": 31, "the exile": 32, "the rad-lands": 33,
+            "back to school": 34, "the west world": 35, "it hungers": 36,
             }

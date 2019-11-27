@@ -17,7 +17,7 @@ while choice not in answers:
     choice = input("Use butter for major quests? y/n: ").lower()
 
 while True:  # main loop
-    titans = Adventure.check_titan_status()
+    titans = Adventure.get_titan_status()
     if titans:
         Adventure.kill_titan(titans[0])
     text = Questing.get_quest_text()
@@ -28,5 +28,5 @@ while True:  # main loop
         Questing.set_use_majors()
         Questing.questing(butter=answers[choice])
     MoneyPit.pit()
-    GoldDiggers.gold_diggers()
+    GoldDiggers.activate()
     time.sleep(3)

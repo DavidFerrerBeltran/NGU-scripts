@@ -1,11 +1,12 @@
 """Contains functions for running a blind challenge."""
-from classes.features import FightBoss, Adventure, Augmentation, GoldDiggers
-from classes.features import Wandoos, TimeMachine, BloodMagic, Rebirth
-from classes.inputs   import Inputs
-
-import coordinates as coords
 import time
 
+import coordinates as coords
+
+from classes.features   import Adventure, Augmentation, BloodMagic, FightBoss
+from classes.features   import GoldDiggers, TimeMachine, Wandoos
+from classes.misc       import Rebirth
+from classes.processing import Processing
 
 advanced_training_locked = True
 bm_locked = True
@@ -27,18 +28,18 @@ def run(duration):
     time.sleep(2)
     FightBoss.fight()
     diggers = [2, 3, 11, 12]
-    Adventure.adventure(highest=True)
-    Augmentation.augments({"SS": 1}, 1e12)
-    GoldDiggers.gold_diggers(diggers)
+    Adventure.set_zone(0)
+    Augmentation.assign_energy({"SS": 1}, 1e12)
+    GoldDiggers.activate(diggers)
     while time.time() < end:
-        Augmentation.augments({"EB": 0.66, "CS": 0.34}, 1e13)
-        Wandoos.wandoos(True, True)
+        Augmentation.assign_energy({"EB": 0.66, "CS": 0.34}, 1e13)
+        Wandoos.cap_dumps(True, True)
         FightBoss.nuke()
         FightBoss.fight()
-        GoldDiggers.gold_diggers(diggers)
+        GoldDiggers.activate(diggers)
         update_gamestate()
         if not tm_locked and not tm_assigned:
-            TimeMachine.time_machine(1e13, m=1e13)
+            TimeMachine.assign_resources(1e13, m=1e13)
             tm_assigned = True
         if not bm_locked and not bm_assigned:
             BloodMagic.blood_magic(8)
@@ -47,7 +48,7 @@ def run(duration):
             return
     if not Rebirth.check_challenge():
         return
-    Rebirth.do_rebirth()
+    Rebirth.rebirth()
     return
 
 def update_gamestate():
@@ -55,27 +56,27 @@ def update_gamestate():
     global advanced_training_locked, bm_locked, tm_locked
 
     if advanced_training_locked:
-        advanced_training_locked = Inputs.check_pixel_color(*coords.COLOR_ADV_TRAINING_LOCKED)
+        advanced_training_locked = Processing.check_pixel_color(*coords.COLOR_ADV_TRAINING_LOCKED)
     if bm_locked:
-        bm_locked = Inputs.check_pixel_color(*coords.COLOR_BM_LOCKED)
+        bm_locked = Processing.check_pixel_color(*coords.COLOR_BM_LOCKED)
     if tm_locked:
-        tm_locked = Inputs.check_pixel_color(*coords.COLOR_TM_LOCKED)
+        tm_locked = Processing.check_pixel_color(*coords.COLOR_TM_LOCKED)
 
 def blind():
     """Run blind challenge."""
-    for x in range(8):
+    for _ in range(8):
         run(3)
         if not Rebirth.check_challenge():
             return
-    for x in range(5):
+    for _ in range(5):
         run(7)
         if not Rebirth.check_challenge():
             return
-    for x in range(5):
+    for _ in range(5):
         run(12)
         if not Rebirth.check_challenge():
             return
-    for x in range(5):
+    for _ in range(5):
         run(60)
         if not Rebirth.check_challenge():
             return

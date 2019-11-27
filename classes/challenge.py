@@ -3,14 +3,16 @@
 import time
 from typing import List
 
-import coordinates as coords
+import coordinates  as coords
 import usersettings as userset
-from classes.discord import Discord
-from classes.features import BloodMagic, Rebirth
-from classes.inputs import Inputs
+
+from classes.discord    import Discord
+from classes.features   import BloodMagic
+from classes.inputs     import Inputs
+from classes.misc       import Rebirth
 from classes.navigation import Navigation
 from classes.processing import Processing
-from classes.window import Window
+from classes.window     import Window
 
 from .challenges.augment     import augment
 from .challenges.basic       import basic
@@ -25,7 +27,7 @@ from .challenges.timemachine import timemachine
 
 class ChInfo:
     """Holds info about a challenge, including which script to run"""
-    def __init__(self, name="", script=None, extra=[]):
+    def __init__(self, name="", script=None, extra=None):
         self.name = name
         self.script = script
         self.extra = extra
@@ -38,7 +40,7 @@ def init(ch_list):
             y = coords.CHALLENGE.y + 3 * coords.CHALLENGEOFFSET
 
             Navigation.challenges()
-            Inputs.click(x, y, button="right")
+            Inputs.click(x, y, Inputs.Const.MOUSE_RIGHT)
             time.sleep(userset.LONG_SLEEP)
             target = Processing.ocr(*coords.OCR_CHALLENGE_24HC_TARGET)
             target = Processing.get_numbers(target)[0]
@@ -73,7 +75,7 @@ class Challenge:
     """Handles different challenges."""
     
     @staticmethod
-    def run_challenge(challenge :int, cont :bool =False) -> None:
+    def run_challenge(challenge :int, *, cont :bool =False, guff :bool =False) -> None:
         """Run the selected challenge.
         
         Keyword arguments
@@ -94,13 +96,16 @@ class Challenge:
         
         chall = Ch_List[challenge-1]
         print(f"Starting {chall.name} Challenge script.")
-        for x in chall.extra:
-            if callable(x): print(x())
-            else: print(x)
-        chall.script()
+        if chall.extra is not None:
+            for x in chall.extra:
+                if callable(x): print(x())
+                else: print(x)
+
+        try: chall.script(guff=guff)
+        except: chall.script()
     
     @staticmethod
-    def start_challenge(challenge :int, quitCurrent :bool =False) -> None:
+    def start_challenge(challenge :int, *, quitCurrent :bool =False, guff :bool =False) -> None:
         """Start the selected challenge. Checks for currently running challenges.
         
         Keyword arguments
@@ -116,9 +121,9 @@ class Challenge:
             if quitCurrent:
                 print("Quitting current challenge.")
                 Navigation.challenge_quit()
-            else: Challenge.run_challenge(chall, cont=True)
+            else: Challenge.run_challenge(chall, cont=True, guff=guff)
 
-        Challenge.run_challenge(challenge)
+        Challenge.run_challenge(challenge, guff=guff)
     
     @staticmethod
     def list() -> List[str]:

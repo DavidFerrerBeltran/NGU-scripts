@@ -1,30 +1,17 @@
 """Guffin Run Class"""
-
 import time
+from typing import ClassVar, List, NamedTuple
 
-# Helper classes
-from classes.features import (
-    AdvancedTraining,
-    Adventure,
-    BloodMagic,
-    FightBoss,
-    GoldDiggers,
-    Hacks,
-    Inputs,
-    Misc,
-    TimeMachine,
-    Augmentation,
-    MoneyPit,
-    Rebirth,
-    Questing,
-    NGU,
-    Wandoos,
-)
-from classes.wishes import Wishes
+from classes.features   import NGU, AdvancedTraining, Adventure, Augmentation
+from classes.features   import BloodMagic, FightBoss, GoldDiggers, Hacks
+from classes.features   import MoneyPit, Questing, TimeMachine, Wandoos
+from classes.inputs     import Inputs
+from classes.misc       import Misc, Rebirth
+from classes.processing import Processing
+from classes.wishes     import Wishes
 
+import constants   as const
 import coordinates as coords
-import constants as const
-from typing import NamedTuple, List, ClassVar
 
 
 class GuffinRun:
@@ -78,7 +65,7 @@ class GuffinRun:
     @staticmethod
     def __update_gamestate() -> None:
         """Update relevant state information."""
-        GuffinRun.rb_time = Rebirth.rt_to_seconds()
+        GuffinRun.rb_time = Rebirth.time_seconds()
         try:
             GuffinRun.current_boss = int(FightBoss.get_current_boss())
         except ValueError:
@@ -86,7 +73,7 @@ class GuffinRun:
             print("couldn't get current boss")
 
         if GuffinRun.advanced_training_locked:
-            GuffinRun.advanced_training_locked = Inputs.check_pixel_color(
+            GuffinRun.advanced_training_locked = Processing.check_pixel_color(
                 *coords.COLOR_ADV_TRAINING_LOCKED
             )
 
@@ -101,7 +88,7 @@ class GuffinRun:
         ):
             Questing.questing(duration=2, force=const.QUEST_ZONE_MAP[GuffinRun.zone])
         else:
-            if not Inputs.check_pixel_color(*coords.COLOR_QUESTING_USE_MAJOR):
+            if not Processing.check_pixel_color(*coords.COLOR_QUESTING_USE_MAJOR):
                 Inputs.click(*coords.QUESTING_USE_MAJOR)
             Questing.questing(duration=2, butter=GuffinRun.butter)
 
@@ -113,22 +100,22 @@ class GuffinRun:
         GuffinRun.rb_time = 0
         GuffinRun.__update_gamestate()
         if GuffinRun.rb_time > GuffinRun.max_rb_duration:
-            Rebirth.do_rebirth()
+            Rebirth.rebirth()
             return
         FightBoss.nuke()
         time.sleep(2)
-        Adventure.adventure(const.ZONE_MAP[GuffinRun.gold_zone])
+        Adventure.set_zone(const.ZONE_MAP[GuffinRun.gold_zone])
         BloodMagic.toggle_auto_spells(number=False, drop=False)
-        GoldDiggers.gold_diggers(GuffinRun.diggers)
+        GoldDiggers.activate(GuffinRun.diggers)
         BloodMagic.blood_magic(8)
-        NGU.cap_ngu()
-        NGU.cap_ngu(magic=True)
+        NGU.cap()
+        NGU.cap(magic=True)
         Wandoos.set_wandoos(0)
-        Wandoos.wandoos(True, True)
-        Augmentation.augments(
+        Wandoos.cap_dumps(True, True)
+        Augmentation.assign_energy(
             {GuffinRun.aug[0]: 0.66, GuffinRun.aug[1]: 0.34}, Misc.get_idle_cap(1) * 0.5
         )
-        TimeMachine.time_machine(Misc.get_idle_cap(1) * 0.1, magic=True)
+        TimeMachine.assign_resources(Misc.get_idle_cap(1) * 0.1, magic=True)
         GuffinRun.__update_gamestate()
         BloodMagic.toggle_auto_spells(drop=False, gold=False)
         if GuffinRun.wishes:
@@ -139,35 +126,35 @@ class GuffinRun:
         while GuffinRun.advanced_training_locked:
             GuffinRun.__do_quest()
             FightBoss.nuke()
-            GoldDiggers.gold_diggers(GuffinRun.diggers)
-            NGU.cap_ngu()
-            NGU.cap_ngu(magic=True)
-            Hacks.hacks(GuffinRun.hacks, coords.INPUT_MAX)
-            Augmentation.augments(
+            GoldDiggers.activate(GuffinRun.diggers)
+            NGU.cap()
+            NGU.cap(magic=True)
+            Hacks.activate(GuffinRun.hacks, coords.INPUT_MAX)
+            Augmentation.assign_energy(
                 {GuffinRun.aug[0]: 0.66, GuffinRun.aug[1]: 0.34},
                 Misc.get_idle_cap(1) * 0.5,
             )
-            TimeMachine.time_machine(coords.INPUT_MAX, magic=True)
+            TimeMachine.assign_resources(coords.INPUT_MAX, magic=True)
             GuffinRun.__update_gamestate()
 
         Misc.reclaim_tm(energy=True, magic=True)
         Misc.reclaim_aug()
-        AdvancedTraining.advanced_training(1e12)
+        AdvancedTraining.assign_energy(1e12)
         Wandoos.set_wandoos(GuffinRun.wandoos_version)
-        Wandoos.wandoos(True, True)
-        Augmentation.augments(
+        Wandoos.cap_dumps(True, True)
+        Augmentation.assign_energy(
             {GuffinRun.aug[0]: 0.66, GuffinRun.aug[1]: 0.34}, Misc.get_idle_cap(1) * 0.5
         )
-        TimeMachine.time_machine(Misc.get_idle_cap(1) * 0.1, magic=True)
+        TimeMachine.assign_resources(Misc.get_idle_cap(1) * 0.1, magic=True)
         while GuffinRun.rb_time < GuffinRun.max_rb_duration - 140:
-            GoldDiggers.gold_diggers(GuffinRun.diggers)
+            GoldDiggers.activate(GuffinRun.diggers)
             FightBoss.nuke()
-            Hacks.hacks(GuffinRun.hacks, coords.INPUT_MAX)
+            Hacks.activate(GuffinRun.hacks, coords.INPUT_MAX)
             GuffinRun.__do_quest()
             GuffinRun.__update_gamestate()
 
         FightBoss.fight()
-        Adventure.adventure(itopodauto=True)
+        Adventure.itopod()
         MoneyPit.pit()
         Misc.save_check()
         while GuffinRun.rb_time < GuffinRun.max_rb_duration:
@@ -175,7 +162,7 @@ class GuffinRun:
             GuffinRun.__update_gamestate()
 
         FightBoss.nuke()
-        Rebirth.do_rebirth()
+        Rebirth.rebirth()
         # Must wait for game to fully redraw all elements after rebirthing
         time.sleep(1)
         GuffinRun.runs += 1

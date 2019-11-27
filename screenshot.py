@@ -1,5 +1,5 @@
 from classes.helper import Helper
-from classes.inputs import Inputs
+from classes.processing import Processing
 
 Helper.init()
-Inputs.save_screenshot()
+Processing.save_screenshot()

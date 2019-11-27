@@ -1,5 +1,8 @@
 # user defined settings
 
+# TARGET
+BROWSER = True # Set this to False to use with Kartridge/Steam, and True to use on browser
+
 # SLEEPS
 FAST_SLEEP = 0.06
 SHORT_SLEEP = 0.15
