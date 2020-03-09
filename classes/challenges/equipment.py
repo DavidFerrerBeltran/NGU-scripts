@@ -28,11 +28,15 @@ def speedrun(duration):
     while int(rb_time.timestamp.tm_min) < duration:
         GoldDiggers.activate(diggers)
         Wandoos.cap_dumps(True, True)
-        Augmentation.assign_energy({"SM": 1}, coords.INPUT_MAX)
+        
+        
         if not Processing.check_pixel_color(*coords.COLOR_TM_LOCKED):
             BloodMagic.blood_magic(6)
+
+        Augmentation.assign_energy({"MI": 1}, coords.INPUT_MAX)
         FightBoss.nuke()
         rb_time = Rebirth.time_()
+        
     MoneyPit.pit()
     MoneyPit.spin()
     return
@@ -41,18 +45,18 @@ def equipment():
     """Run no equipment challenge."""
     Wandoos.set_wandoos(0)  # wandoos 98, use 1 for meh
 
-    for _ in range(8):
+    for _ in range(0):
         speedrun(3)
         if not Rebirth.check_challenge():
             return
         Rebirth.rebirth()
-    for _ in range(5):
+    for _ in range(1):
         speedrun(7)
         if not Rebirth.check_challenge():
             return
         Rebirth.rebirth()
     for _ in range(5):
-        speedrun(12)
+        speedrun(15)
         if not Rebirth.check_challenge():
             return
         Rebirth.rebirth()

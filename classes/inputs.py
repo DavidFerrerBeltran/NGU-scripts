@@ -29,7 +29,7 @@ class Inputs:
         ARROW_DOWN  = 4
     
     @staticmethod
-    def click(x :int, y :int, button :int =MOUSE_LEFT, *, fast :bool =False) -> None:
+    def click(x :int, y :int, button :int =Const.MOUSE_LEFT, *, fast :bool =False) -> None:
         """Click at pixel xy."""
         x += Window.x
         y += Window.y
@@ -58,7 +58,7 @@ class Inputs:
             time.sleep(userset.MEDIUM_SLEEP)
         
     @staticmethod
-    def click_drag(x :int, y :int, x2 :int, y2 :int, button :int =MOUSE_LEFT) -> None:
+    def click_drag(x :int, y :int, x2 :int, y2 :int, button :int =Const.MOUSE_LEFT) -> None:
         """Click at pixel xy."""
         x += Window.x
         y += Window.y
@@ -93,7 +93,7 @@ class Inputs:
         time.sleep(userset.MEDIUM_SLEEP)
 
     @staticmethod
-    def ctrl_click(x :int, y :int, button :int =MOUSE_LEFT) -> None:
+    def ctrl_click(x :int, y :int, button :int =Const.MOUSE_LEFT) -> None:
         """Clicks at pixel x, y while simulating the CTRL button to be down."""
         x += Window.x
         y += Window.y
